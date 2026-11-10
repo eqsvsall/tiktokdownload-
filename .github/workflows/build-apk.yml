@@ -1,0 +1,76 @@
+name: Build TikTok Downloader APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.9'
+
+      - name: Generate Android scaffold
+        run: |
+          flutter create --platforms=android --org com.cryfsall --project-name tikdl /tmp/scaffold
+          rm -rf android
+          cp -r /tmp/scaffold/android ./android
+
+      - name: Apply overlay (manifest + native Kotlin)
+        run: |
+          cp overlay/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
+          mkdir -p android/app/src/main/kotlin/com/cryfsall/tikdl
+          cp overlay/MainActivity.kt android/app/src/main/kotlin/com/cryfsall/tikdl/MainActivity.kt
+
+      - name: Dark launch screen
+        run: |
+          mkdir -p android/app/src/main/res/drawable android/app/src/main/res/drawable-v21
+          cp overlay/launch_background.xml android/app/src/main/res/drawable/launch_background.xml
+          cp overlay/launch_background.xml android/app/src/main/res/drawable-v21/launch_background.xml
+          for f in android/app/src/main/res/values*/styles.xml; do
+            sed -i 's|<item name="android:windowBackground">@drawable/launch_background</item>|&\n        <item name="android:windowSplashScreenBackground">#0B0B0D</item>|' "$f"
+          done
+
+      - name: Pub get
+        run: flutter pub get
+
+      - name: Generate launcher icons
+        run: dart run flutter_launcher_icons
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Rename APK
+        run: cp build/app/outputs/flutter-apk/app-release.apk TikTokDownloader.apk
+
+      - name: Upload APK (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: cfs-tiktok-downloader-apk
+          path: TikTokDownloader.apk
+
+      - name: Publish to Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.${{ github.run_number }}
+          name: TikTok Downloader v1.${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          files: TikTokDownloader.apk
+          make_latest: true

@@ -1,0 +1,29 @@
+name: tikdl
+description: CFS TikTok Downloader (WebView + splash + notifikasi)
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  webview_flutter: ^4.10.0
+  path_provider: ^2.1.5
+
+dev_dependencies:
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon.png"
+  adaptive_icon_background: "#FEFEFE"
+  adaptive_icon_foreground: "assets/icon.png"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/cryfsall-logo.png
+    - assets/logo-white.png
