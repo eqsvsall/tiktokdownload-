@@ -9,9 +9,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 /// ====== PENGATURAN (ganti di sini kalau URL / nama berubah) ======
-const String kSiteUrl = 'https://cfstiktokdownloader.vercel.app';
+const String kSiteUrl = 'https://cfstiktokdownloader.vercel.app/';
 const String kAppTitle = 'TIKTOK DOWNLOADER';
-const Duration kMinSplash = Duration(milliseconds: 3200);
+const Duration kMinSplash = Duration(milliseconds: 3500);
 const Duration kMaxWait = Duration(seconds: 20);
 const Color kSplashBg = Color(0xFF0B0B0D); // background splash (dark minimal)
 const Color kSiteBg = Color(0xFF0B0B0D); // background website (dark)
